@@ -9,7 +9,22 @@ import ModelManagement from "@/components/ModelManagement";
 import Toasts, { Toast, ToastType } from "@/components/Toasts";
 import InfoPages from "@/components/InfoPages";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || (typeof window !== "undefined" && window.location.hostname !== "localhost" ? "/api" : "http://localhost:8000");
+const getApiBase = () => {
+  const envUrl = process.env.NEXT_PUBLIC_API_URL;
+  const isPlaceholder = envUrl && envUrl.includes("your-backend-url.com");
+
+  if (envUrl && !isPlaceholder) return envUrl;
+
+  if (typeof window !== "undefined") {
+    if (window.location.hostname === "localhost") {
+      return "http://localhost:8000";
+    }
+    return "/api";
+  }
+  return "/api";
+};
+
+const API_BASE = getApiBase();
 
 type AnalysisMode = "manual" | "repo";
 type ViewType = "dashboard" | "docs" | "security" | "api" | "privacy" | "infrastructure" | "contact";
