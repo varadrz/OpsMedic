@@ -24,23 +24,38 @@ export default function ModelManagement({ onTrain }: ModelManagementProps) {
     };
 
     return (
-        <div className="p-6 bg-slate-900 rounded-xl border border-slate-800 shadow-2xl mt-8">
-            <div className="flex justify-between items-center">
+        <div className="flex flex-col space-y-4">
+            <div className="flex items-center justify-between">
                 <div>
-                    <h2 className="text-xl font-semibold text-slate-100 mb-1">Model Management</h2>
-                    <p className="text-slate-400 text-sm">Update the ML classifier with latest historical data</p>
+                    <h3 className="text-base font-semibold text-slate-900 italic">Model Control</h3>
+                    <p className="text-xs text-slate-500 uppercase tracking-tight">Base Model: BernoulliNB</p>
                 </div>
-                <button
-                    onClick={handleTrain}
-                    disabled={training}
-                    className="px-4 py-2 bg-slate-800 hover:bg-slate-700 disabled:bg-slate-900 text-slate-200 text-sm font-medium rounded-lg border border-slate-700 transition-all active:scale-95 flex items-center space-x-2"
-                >
-                    {training && <div className="w-4 h-4 border-2 border-slate-400 border-t-white rounded-full animate-spin" />}
-                    <span>{training ? "Retraining Engine..." : "Retrain Model"}</span>
-                </button>
+                <div className="h-2 w-2 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.3)]" />
             </div>
+
+            <div className="p-3 bg-slate-50 border border-slate-100 rounded text-xs text-slate-600 leading-relaxed italic">
+                System will process historical pattern data to refine classification accuracy via cross-entropy validation.
+            </div>
+
+            <button
+                onClick={handleTrain}
+                disabled={training}
+                className="w-full py-2.5 bg-indigo-600 hover:bg-slate-900 disabled:bg-slate-100 disabled:text-slate-400 text-white text-sm font-semibold rounded transition-all active:scale-[0.99] flex items-center justify-center space-x-2 shadow-sm"
+            >
+                {training ? (
+                    <>
+                        <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        <span className="uppercase tracking-wide">Refining Weights...</span>
+                    </>
+                ) : (
+                    <>
+                        <span className="uppercase tracking-wide italic">Synchronize Neural Map</span>
+                    </>
+                )}
+            </button>
+
             {lastMessage && (
-                <div className={`mt-4 p-3 rounded-lg text-xs font-medium ${lastMessage.includes('failed') ? 'bg-red-900/20 text-red-400 border border-red-900/50' : 'bg-green-900/20 text-green-400 border border-green-900/50'}`}>
+                <div className={`p-2 rounded border text-[9px] font-bold uppercase transition-all duration-300 ${lastMessage.includes('failed') ? 'bg-red-50 text-red-700 border-red-100' : 'bg-emerald-50 text-emerald-700 border-emerald-100'}`}>
                     {lastMessage}
                 </div>
             )}

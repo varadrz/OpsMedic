@@ -10,6 +10,8 @@ from database import engine as db_engine, get_db
 from github import Github
 import httpx
 import os
+import seed_data
+from sklearn.model_selection import train_test_split as sk_train_test_split
 
 # Create database tables
 models.Base.metadata.create_all(bind=db_engine)
@@ -26,6 +28,15 @@ app.add_middleware(
 )
 
 ml_engine = engine.MLModel()
+
+@app.on_event("startup")
+async def startup_event():
+    # If model is not trained, seed it
+    if not ml_engine.is_trained:
+        print("Model not trained. Seeding baseline data...")
+        data = pd.DataFrame(seed_data.BASELINE_LOGS)
+        ml_engine.train(data)
+        print(f"ML Model seeded with {len(seed_data.BASELINE_LOGS)} baseline records.")
 
 @app.get("/")
 async def root():
@@ -55,34 +66,64 @@ async def predict_failure(log_data: dict = Body(...), db: Session = Depends(get_
     db.commit()
     db.refresh(db_record)
     
+    is_safe = label.lower() in ["safe", "healthy", "healthy / safe"]
+    
     return {
         "id": db_record.id,
         "prediction": label,
         "confidence": confidence,
         "features": features,
         "top_keywords": top_keywords,
-        "timestamp": db_record.timestamp
+        "timestamp": db_record.timestamp,
+        "is_safe": is_safe
     }
 
 @app.post("/train")
 async def train_model(db: Session = Depends(get_db)):
-    # Fetch records with actual labels if available, or just all for "simulated" training
-    records = db.query(models.LogRecord).filter(models.LogRecord.actual_label != None).all()
+    # Fetch records with actual labels
+    labeled_records = db.query(models.LogRecord).filter(models.LogRecord.actual_label != None).all()
     
-    if len(records) < 5:
-        # If not enough labeled data, check if we have any data to simulate a starting model
-        records = db.query(models.LogRecord).limit(50).all()
+    # Combine with seed data for a stronger base
+    seed_df = pd.DataFrame(seed_data.BASELINE_LOGS)
+    
+    if labeled_records:
+        user_df = pd.DataFrame([{
+            "content": r.content,
+            "label": r.actual_label
+        } for r in labeled_records])
+        data = pd.concat([seed_df, user_df], ignore_index=True)
+    else:
+        data = seed_df
+    
+    if len(data) < 5:
+        return {"status": "error", "message": "Not enough data for training"}
+    
+    # Simple accuracy check using split
+    try:
+        train_data, test_data = sk_train_test_split(data, test_size=0.2, random_state=42)
+        ml_engine.train(train_data)
         
-    if not records:
-        return {"status": "error", "message": "No data available for training"}
-    
-    data = pd.DataFrame([{
-        "content": r.content,
-        "label": r.actual_label or r.predicted_label
-    } for r in records])
-    
-    ml_engine.train(data)
-    return {"status": "success", "message": f"Model trained on {len(records)} records"}
+        # Test accuracy on the 20% split
+        correct = 0
+        for _, row in test_data.iterrows():
+            pred, _ = ml_engine.predict(row['content'])
+            if pred == row['label']:
+                correct += 1
+        
+        accuracy = correct / len(test_data) if len(test_data) > 0 else 1.0
+        
+        # Final train on full data
+        ml_engine.train(data)
+        
+        return {
+            "status": "success", 
+            "message": f"Model trained on {len(data)} records",
+            "accuracy": f"{accuracy:.2%}"
+        }
+    except Exception as e:
+        # Fallback if split fails (e.g. too few samples of a class)
+        ml_engine.train(data)
+        return {"status": "success", "message": f"Model trained on {len(data)} records (accuracy check skipped)"}
 
 @app.get("/history")
 async def get_history(db: Session = Depends(get_db)):
@@ -111,7 +152,15 @@ async def analyze_repo(repo_data: dict = Body(...), db: Session = Depends(get_db
         # Get latest failed workflow runs
         runs = repo.get_workflow_runs(status="failure")
         if runs.totalCount == 0:
-            return {"status": "error", "message": "No failed workflow runs found in the repository."}
+            return {
+                "status": "success", 
+                "message": "No failed workflow runs found. This repository is healthy!",
+                "prediction": "Healthy / Safe",
+                "confidence": 1.0,
+                "is_safe": True,
+                "features": {},
+                "top_keywords": []
+            }
         
         latest_run = runs[0]
         jobs = latest_run.jobs()

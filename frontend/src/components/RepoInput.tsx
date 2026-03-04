@@ -18,47 +18,49 @@ export default function RepoInput({ onAnalyze, loading }: RepoInputProps) {
     };
 
     return (
-        <div className="flex flex-col space-y-4 p-6 bg-slate-900 rounded-xl border border-slate-800 shadow-2xl">
-            <div className="flex justify-between items-center mb-2">
-                <h2 className="text-xl font-semibold text-slate-100">Deep Repo Analysis</h2>
-                <div className="px-2 py-0.5 bg-blue-900/40 text-blue-400 text-[10px] font-bold uppercase rounded border border-blue-800/50">
-                    GitHub Actions
-                </div>
+        <div className="flex flex-col space-y-4">
+            <div className="flex flex-col">
+                <h2 className="text-base font-semibold text-slate-900">Remote Repository Scan</h2>
+                <p className="text-xs text-slate-500">Provide URL for automated pattern matching</p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <span className="text-slate-500 text-sm">🔗</span>
+            <form onSubmit={handleSubmit} className="space-y-4 flex-1 flex flex-col justify-center">
+                <div className="relative border border-slate-200 rounded overflow-hidden focus-within:ring-1 focus-within:ring-indigo-500 transition-all bg-slate-50 p-1">
+                    <div className="flex items-center px-3">
+                        <span className="text-sm mr-2 opacity-50">🔗</span>
+                        <input
+                            type="text"
+                            className="w-full py-2 bg-transparent text-slate-900 outline-none text-xs font-medium placeholder:text-slate-400"
+                            placeholder="e.g. https://github.com/org/repo"
+                            value={url}
+                            onChange={(e) => setUrl(e.target.value)}
+                        />
                     </div>
-                    <input
-                        type="text"
-                        className="w-full pl-10 pr-4 py-3 bg-slate-950 text-slate-300 rounded-lg border border-slate-700 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
-                        placeholder="https://github.com/owner/repository"
-                        value={url}
-                        onChange={(e) => setUrl(e.target.value)}
-                    />
+                </div>
+
+                <div className="p-3 bg-indigo-50 border border-indigo-100 rounded text-xs text-indigo-700 italic">
+                    <p className="leading-relaxed">
+                        Engine will automate the extraction and analysis of the latest workflow failure signals.
+                    </p>
                 </div>
 
                 <button
                     type="submit"
                     disabled={loading || !url.trim()}
-                    className="w-full px-6 py-3 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-700 text-white font-medium rounded-lg shadow-lg shadow-indigo-500/20 transition-all active:scale-95 flex items-center justify-center space-x-2"
+                    className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-100 disabled:text-slate-400 text-white text-sm font-semibold rounded transition-all active:scale-[0.99] flex items-center justify-center space-x-2 shadow-sm"
                 >
                     {loading ? (
-                        <>
-                            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                            <span>Scanning Repository...</span>
-                        </>
+                        <div className="flex items-center space-x-2">
+                            <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                            <span className="uppercase tracking-wide">Scanning...</span>
+                        </div>
                     ) : (
-                        <span>Analyze Latest Failure</span>
+                        <div className="flex items-center space-x-2">
+                            <span className="uppercase tracking-wide">Search Repository</span>
+                        </div>
                     )}
                 </button>
             </form>
-
-            <p className="text-[10px] text-slate-500 mt-2 text-center italic">
-                Analyzes the latest failed CI/CD workflow run logs from public repositories.
-            </p>
         </div>
     );
 }

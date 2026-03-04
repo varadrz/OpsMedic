@@ -26,12 +26,18 @@ class MLModel:
     def __init__(self):
         self.model = None
         self.vectorizer = None
+        self.is_trained = False
         self.load()
 
     def load(self):
         if os.path.exists(MODEL_PATH) and os.path.exists(VECTORIZER_PATH):
-            self.model = joblib.load(MODEL_PATH)
-            self.vectorizer = joblib.load(VECTORIZER_PATH)
+            try:
+                self.model = joblib.load(MODEL_PATH)
+                self.vectorizer = joblib.load(VECTORIZER_PATH)
+                self.is_trained = True
+            except Exception as e:
+                print(f"Error loading model: {e}")
+                self.is_trained = False
 
     def save(self):
         if self.model and self.vectorizer:
@@ -40,17 +46,27 @@ class MLModel:
 
     def train(self, data: pd.DataFrame):
         # data should have 'content' and 'label'
+        if data.empty:
+            return
+            
         self.vectorizer = TfidfVectorizer(max_features=5000)
         X = self.vectorizer.fit_transform(data['content'])
         y = data['label']
         
-        self.model = RandomForestClassifier(n_estimators=100)
-        self.model.fit(X, y)
-        self.save()
+        # Only train if we have more than one class to avoid trivial 100% confidence
+        if len(y.unique()) > 1:
+            self.model = RandomForestClassifier(n_estimators=100)
+            self.model.fit(X, y)
+            self.is_trained = True
+            self.save()
+        else:
+            print("Not enough diverse data to train a classifier. Skipping.")
 
     def predict(self, log_content: str):
         if not self.model or not self.vectorizer:
-            return "Unknown", 0.0
+            self.load()
+            if not self.model or not self.vectorizer:
+                return "Unknown", 0.0
         
         X = self.vectorizer.transform([log_content])
         probs = self.model.predict_proba(X)[0]
