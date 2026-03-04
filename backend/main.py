@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException, Body, Query
+from fastapi import FastAPI, Depends, HTTPException, Body, Query, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 import json
@@ -18,6 +18,9 @@ from sklearn.model_selection import train_test_split as sk_train_test_split
 models.Base.metadata.create_all(bind=db_engine)
 
 app = FastAPI(title="OpsMedic API")
+
+# Use a router to handle both / and /api prefixes (for Vercel)
+router = APIRouter()
 
 # Add CORS middleware
 app.add_middleware(
@@ -39,11 +42,11 @@ async def startup_event():
         ml_engine.train(data)
         print(f"ML Model seeded with {len(seed_data.BASELINE_LOGS)} baseline records.")
 
-@app.get("/")
+@router.get("/")
 async def root():
     return {"message": "OpsMedic API is running"}
 
-@app.post("/predict")
+@router.post("/predict")
 async def predict_failure(log_data: dict = Body(...), db: Session = Depends(get_db)):
     content = log_data.get("content", "")
     session_id = log_data.get("session_id")
@@ -80,7 +83,7 @@ async def predict_failure(log_data: dict = Body(...), db: Session = Depends(get_
         "is_safe": is_safe
     }
 
-@app.post("/train")
+@router.post("/train")
 async def train_model(db: Session = Depends(get_db)):
     # Fetch records with actual labels
     labeled_records = db.query(models.LogRecord).filter(models.LogRecord.actual_label != None).all()
@@ -127,7 +130,7 @@ async def train_model(db: Session = Depends(get_db)):
         ml_engine.train(data)
         return {"status": "success", "message": f"Model trained on {len(data)} records (accuracy check skipped)"}
 
-@app.get("/history")
+@router.get("/history")
 async def get_history(session_id: Optional[str] = Query(None), db: Session = Depends(get_db)):
     query = db.query(models.LogRecord)
     if session_id:
@@ -135,7 +138,7 @@ async def get_history(session_id: Optional[str] = Query(None), db: Session = Dep
     records = query.order_by(models.LogRecord.timestamp.desc()).limit(50).all()
     return [{"id": r.id, "prediction": r.predicted_label, "confidence": r.confidence, "timestamp": r.timestamp} for r in records]
 
-@app.post("/analyze-repo")
+@router.post("/analyze-repo")
 async def analyze_repo(repo_data: dict = Body(...), db: Session = Depends(get_db)):
     repo_url = repo_data.get("url", "")
     session_id = repo_data.get("session_id")
@@ -232,3 +235,7 @@ async def analyze_repo(repo_data: dict = Body(...), db: Session = Depends(get_db
     except Exception as e:
         print(f"Repo analysis error: {e}")
         raise HTTPException(status_code=500, detail=f"GitHub API error: {str(e)}")
+
+# Include the router twice: with and without /api prefix
+app.include_router(router)
+app.include_router(router, prefix="/api")
