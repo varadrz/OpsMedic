@@ -11,20 +11,32 @@ import InfoPages from "@/components/InfoPages";
 
 const getApiBase = () => {
   const envUrl = process.env.NEXT_PUBLIC_API_URL;
-  const isPlaceholder = envUrl && envUrl.includes("your-backend-url.com");
 
-  if (envUrl && !isPlaceholder) return envUrl;
+  // If we have an env var and it's NOT a placeholder, use it
+  if (envUrl && !envUrl.includes("your-backend-url.com")) {
+    return envUrl;
+  }
 
+  // Default fallbacks
   if (typeof window !== "undefined") {
     if (window.location.hostname === "localhost") {
       return "http://localhost:8000";
     }
+    // On Vercel, always use relative /api path
     return "/api";
   }
   return "/api";
 };
 
 const API_BASE = getApiBase();
+
+// Debug log for Vercel troubleshooting
+if (typeof window !== "undefined") {
+  console.log("OpsMedic API Base resolved to:", API_BASE);
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    console.log("NEXT_PUBLIC_API_URL was:", process.env.NEXT_PUBLIC_API_URL);
+  }
+}
 
 type AnalysisMode = "manual" | "repo";
 type ViewType = "dashboard" | "docs" | "security" | "api" | "privacy" | "infrastructure" | "contact";
