@@ -214,37 +214,43 @@ export default function Home() {
       {/* Footer */}
       <footer className="bg-slate-900 text-slate-400 pt-14 pb-10 px-6">
         <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
             <div className="space-y-4">
               <div className="flex items-center space-x-2">
                 <div className="w-5 h-5 bg-indigo-500 rounded flex items-center justify-center text-white font-bold text-[10px] italic">O</div>
                 <span className="text-sm font-bold text-white tracking-tight">OpsMedic</span>
               </div>
-              <p className="text-sm leading-relaxed">Automating CI/CD failure analysis with precision-engineered AI models. Reduce MTTR with semantic classification.</p>
+              <p className="text-sm leading-relaxed">Automating CI/CD failure analysis with precision-engineered AI.</p>
             </div>
 
-            <div className="grid grid-cols-2 gap-6 md:col-span-2">
-              <div className="space-y-3">
-                <h4 className="font-bold text-white text-xs uppercase tracking-widest">Platform</h4>
-                <ul className="space-y-1.5 text-sm">
-                  <li className="cursor-pointer hover:text-white transition-colors" onClick={() => setView('docs')}>Documentation</li>
-                  <li className="cursor-pointer hover:text-white transition-colors" onClick={() => setView('api')}>API Reference</li>
-                  <li className="cursor-pointer hover:text-white transition-colors" onClick={() => setView('privacy')}>Privacy & Security</li>
-                </ul>
-              </div>
-              <div className="space-y-3">
-                <h4 className="font-bold text-white text-xs uppercase tracking-widest">Support</h4>
-                <ul className="space-y-1.5 text-sm">
-                  <li className="cursor-pointer hover:text-white transition-colors" onClick={() => setView('security')}>Security Overview</li>
-                  <li className="cursor-pointer hover:text-white transition-colors" onClick={() => setView('infrastructure')}>Infrastructure Health</li>
-                  <li className="cursor-pointer hover:text-white transition-colors" onClick={() => setView('contact')}>Contact Engineering</li>
-                </ul>
-              </div>
+            <div className="space-y-3">
+              <h4 className="font-bold text-white text-xs uppercase tracking-widest">Platform</h4>
+              <ul className="space-y-1.5 text-sm">
+                <li className="cursor-pointer hover:text-white transition-colors" onClick={() => setView('docs')}>Documentation</li>
+                <li className="cursor-pointer hover:text-white transition-colors" onClick={() => setView('api')}>API Reference</li>
+                <li className="cursor-pointer hover:text-white transition-colors" onClick={() => setView('privacy')}>Privacy & Security</li>
+              </ul>
+            </div>
+            <div className="space-y-3">
+              <h4 className="font-bold text-white text-xs uppercase tracking-widest">Support</h4>
+              <ul className="space-y-1.5 text-sm">
+                <li className="cursor-pointer hover:text-white transition-colors" onClick={() => setView('security')}>Security Overview</li>
+                <li className="cursor-pointer hover:text-white transition-colors" onClick={() => setView('infrastructure')}>Infrastructure Health</li>
+                <li className="cursor-pointer hover:text-white transition-colors" onClick={() => setView('contact')}>Contact</li>
+              </ul>
+            </div>
+            <div className="space-y-3">
+              <h4 className="font-bold text-white text-xs uppercase tracking-widest">Socials</h4>
+              <ul className="space-y-1.5 text-sm">
+                <li><a href="https://www.linkedin.com/in/varadpatil665/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">LinkedIn</a></li>
+                <li><a href="https://github.com/varadrz" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">GitHub</a></li>
+                <li><a href="http://varadpatil.in/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">varadpatil.in</a></li>
+              </ul>
             </div>
           </div>
 
           <div className="flex flex-col md:flex-row justify-between items-center border-t border-slate-800 pt-6 text-[9px] uppercase font-bold tracking-[0.2em] text-slate-600">
-            <p>© 2026 OpsMedic Engine. All systems operational.</p>
+            <p>Developed with ❤️ by Varad Patil</p>
             <div className="flex space-x-5 mt-3 md:mt-0">
               <span>Latency: 12ms</span>
               <span>Uptime: 99.98%</span>

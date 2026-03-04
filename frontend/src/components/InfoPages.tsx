@@ -222,16 +222,35 @@ export default function InfoPages({ view, onBack }: InfoPagesProps) {
                         <h3 className="text-sm font-bold text-slate-900 mb-1">Bug Reports & Feature Requests</h3>
                         <p>
                             If you encounter a bug or have a feature request, please open an issue on the
-                            <a href="https://github.com" className="text-indigo-600 hover:underline ml-1 font-medium" target="_blank" rel="noopener noreferrer">GitHub Repository</a>.
+                            <a href="https://github.com/varadrz" className="text-indigo-600 hover:underline ml-1 font-medium" target="_blank" rel="noopener noreferrer">GitHub Repository</a>.
                             We actively monitor and triage all incoming issues.
                         </p>
                     </section>
                     <section>
-                        <h3 className="text-sm font-bold text-slate-900 mb-1">Enterprise Support</h3>
-                        <p>
-                            For enterprise deployment assistance, custom model training, or dedicated support,
-                            reach out via email at <span className="text-indigo-600 font-medium">engineering@opsmedic.ai</span>.
-                        </p>
+                        <h3 className="text-sm font-bold text-slate-900 mb-3">Socials</h3>
+                        <div className="flex flex-col space-y-2">
+                            <a href="https://www.linkedin.com/in/varadpatil665/" target="_blank" rel="noopener noreferrer" className="flex items-center space-x-3 p-3 bg-slate-50 rounded border border-slate-100 hover:border-indigo-300 transition-colors group">
+                                <span className="text-lg">💼</span>
+                                <div>
+                                    <p className="text-xs font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">LinkedIn</p>
+                                    <p className="text-[10px] text-slate-400">linkedin.com/in/varadpatil665</p>
+                                </div>
+                            </a>
+                            <a href="https://github.com/varadrz" target="_blank" rel="noopener noreferrer" className="flex items-center space-x-3 p-3 bg-slate-50 rounded border border-slate-100 hover:border-indigo-300 transition-colors group">
+                                <span className="text-lg">🐙</span>
+                                <div>
+                                    <p className="text-xs font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">GitHub</p>
+                                    <p className="text-[10px] text-slate-400">github.com/varadrz</p>
+                                </div>
+                            </a>
+                            <a href="http://varadpatil.in/" target="_blank" rel="noopener noreferrer" className="flex items-center space-x-3 p-3 bg-slate-50 rounded border border-slate-100 hover:border-indigo-300 transition-colors group">
+                                <span className="text-lg">🌐</span>
+                                <div>
+                                    <p className="text-xs font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">Personal Website</p>
+                                    <p className="text-[10px] text-slate-400">varadpatil.in</p>
+                                </div>
+                            </a>
+                        </div>
                     </section>
                     <section>
                         <h3 className="text-sm font-bold text-slate-900 mb-1">Contributing</h3>
