@@ -21,6 +21,7 @@ export default function Home() {
   const [mode, setMode] = useState<AnalysisMode>("repo");
   const [view, setView] = useState<ViewType>("dashboard");
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const [sessionId, setSessionId] = useState<string>("");
 
   const addToast = (message: string, type: ToastType = "info") => {
     const id = Date.now().toString();
@@ -31,9 +32,11 @@ export default function Home() {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   };
 
-  const fetchHistory = async () => {
+  const fetchHistory = async (sid?: string) => {
+    const id = sid || sessionId;
+    if (!id) return;
     try {
-      const res = await fetch(`${API_BASE}/history`);
+      const res = await fetch(`${API_BASE}/history?session_id=${id}`);
       if (res.ok) {
         const data = await res.json();
         setHistory(data);
@@ -44,7 +47,14 @@ export default function Home() {
   };
 
   useEffect(() => {
-    fetchHistory();
+    // Generate or retrieve persistent session ID
+    let sid = localStorage.getItem("opsmedic_session_id");
+    if (!sid) {
+      sid = crypto.randomUUID();
+      localStorage.setItem("opsmedic_session_id", sid);
+    }
+    setSessionId(sid);
+    fetchHistory(sid);
   }, []);
 
   const handleAnalyze = async (content: string) => {
@@ -53,7 +63,7 @@ export default function Home() {
       const res = await fetch(`${API_BASE}/predict`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content }),
+        body: JSON.stringify({ content, session_id: sessionId }),
       });
 
       if (res.ok) {
@@ -75,7 +85,7 @@ export default function Home() {
       const res = await fetch(`${API_BASE}/analyze-repo`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url }),
+        body: JSON.stringify({ url, session_id: sessionId }),
       });
 
       const data = await res.json();

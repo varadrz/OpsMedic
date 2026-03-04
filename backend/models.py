@@ -11,4 +11,5 @@ class LogRecord(Base):
     actual_label = Column(String, nullable=True)
     predicted_label = Column(String)
     confidence = Column(Float)
+    session_id = Column(String, nullable=True, index=True)
     timestamp = Column(DateTime, default=datetime.utcnow)
