@@ -9,7 +9,7 @@ import ModelManagement from "@/components/ModelManagement";
 import Toasts, { Toast, ToastType } from "@/components/Toasts";
 import InfoPages from "@/components/InfoPages";
 
-const API_BASE = "http://localhost:8000";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 type AnalysisMode = "manual" | "repo";
 type ViewType = "dashboard" | "docs" | "security" | "api" | "privacy" | "infrastructure" | "contact";
