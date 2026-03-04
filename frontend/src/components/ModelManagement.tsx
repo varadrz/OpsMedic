@@ -16,7 +16,7 @@ export default function ModelManagement({ onTrain }: ModelManagementProps) {
             await onTrain();
             setLastMessage("Model successfully retrained!");
             setTimeout(() => setLastMessage(""), 5000);
-        } catch (err) {
+        } catch {
             setLastMessage("Training failed. See console for details.");
         } finally {
             setTraining(false);

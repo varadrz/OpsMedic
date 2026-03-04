@@ -34,7 +34,7 @@ export default function HistoryTable({ history }: HistoryTableProps) {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                        {history.map((item: any, idx) => {
+                        {history.map((item: HistoryItem, idx) => {
                             const isSafe = item.prediction.toLowerCase().includes('safe') || item.prediction.toLowerCase().includes('healthy');
                             return (
                                 <tr key={idx} className="group hover:bg-slate-50 transition-colors cursor-pointer">

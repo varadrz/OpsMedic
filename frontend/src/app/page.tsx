@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import LogInput from "@/components/LogInput";
 import RepoInput from "@/components/RepoInput";
 import PredictionResult from "@/components/PredictionResult";
@@ -14,9 +14,17 @@ const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 type AnalysisMode = "manual" | "repo";
 type ViewType = "dashboard" | "docs" | "security" | "api" | "privacy" | "infrastructure" | "contact";
 
+interface PredictionData {
+  prediction: string;
+  confidence: number;
+  top_keywords: string[];
+  features: Record<string, boolean | string | number>;
+  is_safe?: boolean;
+}
+
 export default function Home() {
   const [loading, setLoading] = useState(false);
-  const [prediction, setPrediction] = useState<any>(null);
+  const [prediction, setPrediction] = useState<PredictionData | null>(null);
   const [history, setHistory] = useState([]);
   const [mode, setMode] = useState<AnalysisMode>("repo");
   const [view, setView] = useState<ViewType>("dashboard");
@@ -32,7 +40,7 @@ export default function Home() {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   };
 
-  const fetchHistory = async (sid?: string) => {
+  const fetchHistory = useCallback(async (sid?: string) => {
     const id = sid || sessionId;
     if (!id) return;
     try {
@@ -44,7 +52,7 @@ export default function Home() {
     } catch (err) {
       console.error("Failed to fetch history:", err);
     }
-  };
+  }, [sessionId]);
 
   useEffect(() => {
     // Generate or retrieve persistent session ID
@@ -55,7 +63,7 @@ export default function Home() {
     }
     setSessionId(sid);
     fetchHistory(sid);
-  }, []);
+  }, [fetchHistory]);
 
   const handleAnalyze = async (content: string) => {
     setLoading(true);
@@ -156,7 +164,7 @@ export default function Home() {
       {/* Main Grid Area */}
       <div className="max-w-6xl mx-auto px-6 py-10">
         {view !== "dashboard" ? (
-          <InfoPages view={view as any} onBack={() => setView("dashboard")} />
+          <InfoPages view={view as "docs" | "security" | "api" | "privacy" | "infrastructure" | "contact"} onBack={() => setView("dashboard")} />
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
@@ -188,7 +196,7 @@ export default function Home() {
                       prediction={prediction.prediction}
                       confidence={prediction.confidence}
                       topKeywords={prediction.top_keywords}
-                      features={prediction.features || {}}
+                      features={prediction.features || ({} as Record<string, boolean | string | number>)}
                       isSafe={prediction.is_safe}
                     />
                   ) : (

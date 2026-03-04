@@ -16,7 +16,7 @@ const SAMPLES = {
 export default function LogInput({ onAnalyze, loading }: LogInputProps) {
     const [content, setContent] = useState("");
 
-    const useSample = (type: keyof typeof SAMPLES) => {
+    const loadSample = (type: keyof typeof SAMPLES) => {
         setContent(SAMPLES[type]);
     };
 
@@ -31,7 +31,7 @@ export default function LogInput({ onAnalyze, loading }: LogInputProps) {
                 {Object.keys(SAMPLES).map((key) => (
                     <button
                         key={key}
-                        onClick={() => useSample(key as keyof typeof SAMPLES)}
+                        onClick={() => loadSample(key as keyof typeof SAMPLES)}
                         className="px-3 py-1 text-xs font-medium border border-slate-200 text-slate-600 rounded hover:bg-slate-50 transition-colors"
                     >
                         {key}

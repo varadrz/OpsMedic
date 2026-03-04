@@ -4,7 +4,7 @@ interface PredictionResultProps {
     prediction: string;
     confidence: number;
     topKeywords: string[];
-    features: Record<string, any>;
+    features: Record<string, boolean | string | number>;
     isSafe?: boolean;
 }
 export default function PredictionResult({ prediction, confidence, topKeywords, features, isSafe }: PredictionResultProps) {
